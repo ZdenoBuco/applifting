@@ -1,6 +1,7 @@
-package com.example.applifting.models;
+package com.example.applifting.models.OutDTOs;
 
-import jakarta.persistence.*;
+import com.example.applifting.models.MonitoringResult;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,20 +13,16 @@ import java.util.UUID;
 
 @Data
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonitoredEndpoint {
-    @Id
-    @GeneratedValue
+public class MonitoredEndpointOutDTO {
     private UUID id;
     private String name;
     private String url;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastCheck;
-    private Integer monitoringInterval;
-    @OneToMany(mappedBy = "monitoredEndpoint", cascade = CascadeType.ALL)
     private List<MonitoringResult> monitoringResults;
-    @ManyToOne
-    private AppUser owner;
+    private UUID ownerId;
 }
