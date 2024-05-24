@@ -1,0 +1,20 @@
+version: "3.8"
+
+networks:
+  applifting:
+    name: applifitng
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql
+    networks:
+      applifting:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_NAME}
+    volumes:
+      - /home/zdenko/Desktop/applifting_mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
