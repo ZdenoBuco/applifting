@@ -1,6 +1,5 @@
 package com.example.applifting.models.OutDTOs;
 
-import com.example.applifting.models.MonitoringResult;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,10 +18,11 @@ public class MonitoredEndpointOutDTO {
     private UUID id;
     private String name;
     private String url;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastCheck;
-    private List<MonitoringResult> monitoringResults;
+    private Integer monitoringInterval;
+    private List<MonitoringResultOutDTO> monitoringResults;
     private UUID ownerId;
 }

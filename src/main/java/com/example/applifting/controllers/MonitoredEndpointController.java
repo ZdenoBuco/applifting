@@ -19,9 +19,9 @@ public class MonitoredEndpointController {
     private final MonitoredEndpointService monitoredEndpointService;
 
     @GetMapping("/{monitoredEndpointId}")
-    public ResponseEntity<MonitoredEndpointOutDTO> getMonitoredEndpoint(@PathVariable UUID monitoredEndpointId) {
+    public ResponseEntity<MonitoredEndpointOutDTO> getMonitoredEndpoint(@PathVariable UUID monitoredEndpointId, @RequestParam(required = false) Integer resultLimit) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.getEndpoint(monitoredEndpointId));
+            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.getEndpoint(monitoredEndpointId, resultLimit));
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
@@ -30,9 +30,9 @@ public class MonitoredEndpointController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<MonitoredEndpointOutDTO>> getMonitoredEndpoints(@RequestParam(required = false) Integer limit) {
+    public ResponseEntity<List<MonitoredEndpointOutDTO>> getMonitoredEndpoints(@RequestParam(required = false) Integer resultLimit) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.getEndpoints(limit));
+            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.getEndpoints(resultLimit));
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
