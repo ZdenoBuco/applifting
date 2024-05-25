@@ -3,6 +3,7 @@ package com.example.applifting.controllers;
 import com.example.applifting.exceptions.AppliftingException;
 import com.example.applifting.models.InDTOs.MonitoredEndpointInDTO;
 import com.example.applifting.models.OutDTOs.MonitoredEndpointOutDTO;
+import com.example.applifting.servicies.DynamicMonitoringService;
 import com.example.applifting.servicies.MonitoredEndpointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MonitoredEndpointController {
     private final MonitoredEndpointService monitoredEndpointService;
+    private final DynamicMonitoringService dynamicMonitoringService;
 
     @GetMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> getMonitoredEndpoint(@PathVariable UUID monitoredEndpointId, @RequestParam(required = false) Integer resultLimit) {
@@ -25,7 +27,7 @@ public class MonitoredEndpointController {
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 400);
+            throw new AppliftingException(e.getMessage(), 500);
         }
     }
 
@@ -36,40 +38,46 @@ public class MonitoredEndpointController {
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 400);
+            throw new AppliftingException(e.getMessage(), 500);
         }
     }
 
     @PostMapping()
     public ResponseEntity<MonitoredEndpointOutDTO> createMonitoredEndpoint(@RequestBody MonitoredEndpointInDTO monitoredEndpointInDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(monitoredEndpointService.createEndpoint(monitoredEndpointInDTO));
+            MonitoredEndpointOutDTO createdEndpoint = monitoredEndpointService.createEndpoint(monitoredEndpointInDTO);
+            dynamicMonitoringService.updateMonitoringTask(createdEndpoint);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEndpoint);
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 400);
+            throw new AppliftingException(e.getMessage(), 500);
         }
     }
 
     @PutMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> updateMonitoredEndpoint(@PathVariable UUID monitoredEndpointId, @RequestBody MonitoredEndpointInDTO monitoredEndpointInDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.updateEndpoint(monitoredEndpointInDTO, monitoredEndpointId));
+            MonitoredEndpointOutDTO updatedEndpoint = monitoredEndpointService.updateEndpoint(monitoredEndpointInDTO, monitoredEndpointId);
+            dynamicMonitoringService.updateMonitoringTask(updatedEndpoint);
+            return ResponseEntity.status(HttpStatus.CREATED).body(updatedEndpoint);
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 400);
+            throw new AppliftingException(e.getMessage(), 500);
         }
     }
 
     @DeleteMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> deleteMonitoredEndpoint(@PathVariable UUID monitoredEndpointId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.deleteEndpoint(monitoredEndpointId));
+            dynamicMonitoringService.removeMonitoringTask(monitoredEndpointId);
+            monitoredEndpointService.deleteEndpoint(monitoredEndpointId);
+            return ResponseEntity.noContent().build();
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 400);
+            throw new AppliftingException(e.getMessage(), 500);
         }
     }
 }

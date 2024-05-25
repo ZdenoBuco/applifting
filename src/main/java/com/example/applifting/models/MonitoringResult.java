@@ -1,9 +1,6 @@
 package com.example.applifting.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +20,7 @@ public class MonitoringResult {
     private UUID id;
     private LocalDateTime checkedAt;
     private Integer httpCode;
+    @Column(columnDefinition = "TEXT")
     private String payload;
     @ManyToOne
     private MonitoredEndpoint monitoredEndpoint;;
