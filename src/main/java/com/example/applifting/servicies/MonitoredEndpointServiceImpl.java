@@ -7,13 +7,11 @@ import com.example.applifting.models.MonitoredEndpoint;
 import com.example.applifting.models.MonitoringResult;
 import com.example.applifting.models.OutDTOs.MonitoredEndpointOutDTO;
 import com.example.applifting.models.OutDTOs.MonitoringResultOutDTO;
-import com.example.applifting.repositories.AppUserRepository;
 import com.example.applifting.repositories.MonitoredEndpointRepository;
 import com.example.applifting.repositories.MonitoringResultRepository;
 import com.example.applifting.utilities.MonitoredEndpointInDTOValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,8 +25,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
     private final MonitoredEndpointRepository monitoredEndpointRepository;
-    private final AppUserRepository appUserRepository;
     private final MonitoringResultRepository monitoringResultRepository;
+    private final DynamicMonitoringService dynamicMonitoringService;
+
     private UUID authenticatedUserId;
 
 
@@ -78,17 +77,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
                 .ownerId(authenticatedUserId)
                 .build();
 
-        MonitoredEndpoint savedEndpoint = monitoredEndpointRepository.save(endpoint);
-
-        return MonitoredEndpointOutDTO.builder()
-                .id(savedEndpoint.getId())
-                .name(savedEndpoint.getName())
-                .url(savedEndpoint.getUrl())
-                .createdAt(savedEndpoint.getCreatedAt())
-                .lastCheck(savedEndpoint.getLastCheck())
-                .monitoringInterval(savedEndpoint.getMonitoringInterval())
-                .ownerId(savedEndpoint.getOwnerId())
-                .build();
+        return processMonitoredEndpoint(endpoint);
     }
 
     @Override
@@ -102,17 +91,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
         endpoint.setName(monitoredEndpointInDTO.getName());
         endpoint.setMonitoringInterval(monitoredEndpointInDTO.getMonitoringInterval());
 
-        MonitoredEndpoint updatedEndpoint = monitoredEndpointRepository.save(endpoint);
-
-        return MonitoredEndpointOutDTO.builder()
-                .id(updatedEndpoint.getId())
-                .name(updatedEndpoint.getName())
-                .url(updatedEndpoint.getUrl())
-                .createdAt(updatedEndpoint.getCreatedAt())
-                .lastCheck(updatedEndpoint.getLastCheck())
-                .monitoringInterval(updatedEndpoint.getMonitoringInterval())
-                .ownerId(updatedEndpoint.getOwnerId())
-                .build();
+        return processMonitoredEndpoint(endpoint);
     }
 
     @Override
@@ -122,6 +101,8 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
                 .orElseThrow(() -> new AppliftingException("Monitored Endpoint not found", 404));
         checkIfAuthenticatedUserIsAllowedForEndpoint(endpoint);
         monitoredEndpointRepository.delete(endpoint);
+
+        dynamicMonitoringService.removeMonitoringTask(monitoredEndpointId);
 
         return MonitoredEndpointOutDTO.builder()
                 .id(endpoint.getId())
@@ -150,6 +131,23 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
                         .payload(result.getPayload())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private MonitoredEndpointOutDTO processMonitoredEndpoint(MonitoredEndpoint endpoint) {
+        MonitoredEndpoint updatedEndpoint = monitoredEndpointRepository.save(endpoint);
+
+        MonitoredEndpointOutDTO createdEndpointOutDTO = MonitoredEndpointOutDTO.builder()
+                .id(updatedEndpoint.getId())
+                .name(updatedEndpoint.getName())
+                .url(updatedEndpoint.getUrl())
+                .createdAt(updatedEndpoint.getCreatedAt())
+                .lastCheck(updatedEndpoint.getLastCheck())
+                .monitoringInterval(updatedEndpoint.getMonitoringInterval())
+                .ownerId(updatedEndpoint.getOwnerId())
+                .build();
+
+        dynamicMonitoringService.updateMonitoringTask(createdEndpointOutDTO);
+        return createdEndpointOutDTO;
     }
 
     private void setAuthenticatedUser() {

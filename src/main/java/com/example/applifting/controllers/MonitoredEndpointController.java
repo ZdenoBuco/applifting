@@ -3,7 +3,6 @@ package com.example.applifting.controllers;
 import com.example.applifting.exceptions.AppliftingException;
 import com.example.applifting.models.InDTOs.MonitoredEndpointInDTO;
 import com.example.applifting.models.OutDTOs.MonitoredEndpointOutDTO;
-import com.example.applifting.servicies.DynamicMonitoringService;
 import com.example.applifting.servicies.MonitoredEndpointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MonitoredEndpointController {
     private final MonitoredEndpointService monitoredEndpointService;
-    private final DynamicMonitoringService dynamicMonitoringService;
 
     @GetMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> getMonitoredEndpoint(@PathVariable UUID monitoredEndpointId, @RequestParam(required = false) Integer resultLimit) {
@@ -45,9 +43,7 @@ public class MonitoredEndpointController {
     @PostMapping()
     public ResponseEntity<MonitoredEndpointOutDTO> createMonitoredEndpoint(@RequestBody MonitoredEndpointInDTO monitoredEndpointInDTO) {
         try {
-            MonitoredEndpointOutDTO createdEndpoint = monitoredEndpointService.createEndpoint(monitoredEndpointInDTO);
-            dynamicMonitoringService.updateMonitoringTask(createdEndpoint);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdEndpoint);
+            return ResponseEntity.status(HttpStatus.CREATED).body(monitoredEndpointService.createEndpoint(monitoredEndpointInDTO));
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
@@ -58,9 +54,7 @@ public class MonitoredEndpointController {
     @PutMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> updateMonitoredEndpoint(@PathVariable UUID monitoredEndpointId, @RequestBody MonitoredEndpointInDTO monitoredEndpointInDTO) {
         try {
-            MonitoredEndpointOutDTO updatedEndpoint = monitoredEndpointService.updateEndpoint(monitoredEndpointInDTO, monitoredEndpointId);
-            dynamicMonitoringService.updateMonitoringTask(updatedEndpoint);
-            return ResponseEntity.status(HttpStatus.CREATED).body(updatedEndpoint);
+            return ResponseEntity.status(HttpStatus.CREATED).body(monitoredEndpointService.updateEndpoint(monitoredEndpointInDTO, monitoredEndpointId));
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
@@ -71,9 +65,7 @@ public class MonitoredEndpointController {
     @DeleteMapping("/{monitoredEndpointId}")
     public ResponseEntity<MonitoredEndpointOutDTO> deleteMonitoredEndpoint(@PathVariable UUID monitoredEndpointId) {
         try {
-            dynamicMonitoringService.removeMonitoringTask(monitoredEndpointId);
-            MonitoredEndpointOutDTO deletedEndpoint = monitoredEndpointService.deleteEndpoint(monitoredEndpointId);
-            return ResponseEntity.status(HttpStatus.OK).body(deletedEndpoint);
+            return ResponseEntity.status(HttpStatus.OK).body(monitoredEndpointService.deleteEndpoint(monitoredEndpointId));
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
