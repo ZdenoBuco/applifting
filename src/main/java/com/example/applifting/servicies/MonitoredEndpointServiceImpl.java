@@ -10,6 +10,7 @@ import com.example.applifting.models.OutDTOs.MonitoringResultOutDTO;
 import com.example.applifting.repositories.AppUserRepository;
 import com.example.applifting.repositories.MonitoredEndpointRepository;
 import com.example.applifting.repositories.MonitoringResultRepository;
+import com.example.applifting.utilities.MonitoredEndpointInDTOValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,6 +66,8 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
 
     @Override
     public MonitoredEndpointOutDTO createEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO) {
+        MonitoredEndpointInDTOValidator.validate(monitoredEndpointInDTO);
+
         setAuthenticatedUser();
 
         MonitoredEndpoint endpoint = MonitoredEndpoint.builder()
@@ -90,6 +93,8 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
 
     @Override
     public MonitoredEndpointOutDTO updateEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO, UUID monitoredEndpointId) {
+        MonitoredEndpointInDTOValidator.validate(monitoredEndpointInDTO);
+
         MonitoredEndpoint endpoint = monitoredEndpointRepository.findById(monitoredEndpointId)
                 .orElseThrow(() -> new AppliftingException("Monitored Endpoint not found", 404));
         checkIfAuthenticatedUserIsAllowedForEndpoint(endpoint);
@@ -112,6 +117,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
 
     @Override
     public MonitoredEndpointOutDTO deleteEndpoint(UUID monitoredEndpointId) {
+
         MonitoredEndpoint endpoint = monitoredEndpointRepository.findById(monitoredEndpointId)
                 .orElseThrow(() -> new AppliftingException("Monitored Endpoint not found", 404));
         checkIfAuthenticatedUserIsAllowedForEndpoint(endpoint);
@@ -147,17 +153,8 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
     }
 
     private void setAuthenticatedUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof UserDetails userDetails) {
-            if (userDetails instanceof AppUser) {
-                authenticatedUserId = ((AppUser) userDetails).getId();
-            } else {
-                authenticatedUserId = null;
-            }
-        } else {
-            authenticatedUserId = null;
-        }
+        Optional<AppUser> user = (Optional<AppUser>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        authenticatedUserId = user.map(AppUser::getId).orElse(null);
     }
 
     private void checkIfAuthenticatedUserIsAllowedForEndpoint(MonitoredEndpoint endpoint) {

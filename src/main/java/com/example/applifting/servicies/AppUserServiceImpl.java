@@ -5,6 +5,7 @@ import com.example.applifting.models.AppUser;
 import com.example.applifting.models.InDTOs.AppUserRegistrationInDTO;
 import com.example.applifting.models.OutDTOs.AuthenticationOutDTO;
 import com.example.applifting.repositories.AppUserRepository;
+import com.example.applifting.utilities.AppUserRegistrationInDTOValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
 
     public AuthenticationOutDTO create(AppUserRegistrationInDTO appUserDto) {
+        AppUserRegistrationInDTOValidator.validate(appUserDto);
 
         if (appUserRepository.existsAppUserByEmail(appUserDto.getEmail())) {
             throw new AppliftingException("A user with this email already exists. Please choose a different email.", 400);

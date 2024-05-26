@@ -55,7 +55,7 @@ public class DynamicMonitoringService {
             createMonitoringResult(endpoint, response.getStatusCode().value(), response.getBody());
             endpoint.setLastCheck(LocalDateTime.now());
             monitoredEndpointRepository.save(endpoint);
-            logger.info("Successfully monitored endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), response.getStatusCode().value(), response.getBody());
+            logger.info("Successfully monitored endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), response.getStatusCode().value(), trimResponseBody(response.getBody()));
         } catch (Exception e) {
             int statusCode = 500;
             try {
@@ -67,7 +67,7 @@ public class DynamicMonitoringService {
             createMonitoringResult(endpoint, statusCode, e.getMessage());
             endpoint.setLastCheck(LocalDateTime.now());
             monitoredEndpointRepository.save(endpoint);
-            logger.warn("Error monitoring endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), statusCode, e.getMessage());
+            logger.warn("Error monitoring endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), statusCode, trimResponseBody(e.getMessage()));
         }
     }
 
@@ -96,5 +96,9 @@ public class DynamicMonitoringService {
         if (future != null) {
             future.cancel(true);
         }
+    }
+
+    private String trimResponseBody(String body) {
+        return body == null ? "" : body.trim().replaceAll("[\n\r\t]", " ");
     }
 }
