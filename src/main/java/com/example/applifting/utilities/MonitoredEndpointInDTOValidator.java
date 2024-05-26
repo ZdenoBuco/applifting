@@ -4,10 +4,10 @@ import com.example.applifting.exceptions.AppliftingException;
 import com.example.applifting.models.InDTOs.MonitoredEndpointInDTO;
 
 public class MonitoredEndpointInDTOValidator {
-    private static int NAME_MAX_LENGTH = 255;
-    private static int URL_MAX_LENGTH = 255;
-    private static int MONITORING_INTERVAL_MIN = 5;
-    private static int MONITORING_INTERVAL_MAX = Integer.MAX_VALUE;
+    private static final int NAME_MAX_LENGTH = 255;
+    private static final int URL_MAX_LENGTH = 255;
+    private static final int MONITORING_INTERVAL_MIN = 5;
+    private static final int MONITORING_INTERVAL_MAX = Integer.MAX_VALUE;
 
     public static void validate(MonitoredEndpointInDTO monitoredEndpointInDTO) {
         if (monitoredEndpointInDTO.getName() == null || monitoredEndpointInDTO.getName().length() > NAME_MAX_LENGTH) {
