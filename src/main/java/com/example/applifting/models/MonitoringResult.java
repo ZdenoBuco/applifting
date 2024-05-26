@@ -1,10 +1,7 @@
 package com.example.applifting.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MonitoringResult {
     @Id
     @GeneratedValue
@@ -22,6 +20,5 @@ public class MonitoringResult {
     private Integer httpCode;
     @Column(columnDefinition = "TEXT")
     private String payload;
-    @ManyToOne
-    private MonitoredEndpoint monitoredEndpoint;;
+    private UUID monitoredEndpointId;
 }

@@ -1,10 +1,7 @@
 package com.example.applifting.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MonitoredEndpoint {
     @Id
     @GeneratedValue
@@ -24,8 +22,7 @@ public class MonitoredEndpoint {
     private LocalDateTime createdAt;
     private LocalDateTime lastCheck;
     private Integer monitoringInterval;
-    @OneToMany(mappedBy = "monitoredEndpoint", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "monitoredEndpointId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<MonitoringResult> monitoringResults;
-    @ManyToOne
-    private AppUser owner;
+    private UUID ownerId;
 }

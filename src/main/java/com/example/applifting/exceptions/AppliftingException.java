@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class AppliftingException extends RuntimeException {
     private Integer statusCode;
+
     public AppliftingException(String message, int statusCode) {
         super(message);
         this.statusCode = statusCode;

@@ -12,5 +12,4 @@ public interface MonitoredEndpointService {
     MonitoredEndpointOutDTO createEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO);
     MonitoredEndpointOutDTO updateEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO, UUID monitoredEndpointId);
     MonitoredEndpointOutDTO deleteEndpoint(UUID monitoredEndpointId);
-
 }

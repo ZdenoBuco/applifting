@@ -53,7 +53,7 @@ public class DynamicMonitoringService {
             endpoint.setLastCheck(LocalDateTime.now());
             monitoredEndpointRepository.save(endpoint);
         } catch (Exception e) {
-            int statusCode = 400;
+            int statusCode = 500;
             try {
                 statusCode = Integer.parseInt(e.getMessage().substring(0, 3));
 
@@ -61,12 +61,14 @@ public class DynamicMonitoringService {
                 // If parsing failed or substring index out of bounds, use status code 500
             }
             createMonitoringResult(endpoint, statusCode, e.getMessage());
+            endpoint.setLastCheck(LocalDateTime.now());
+            monitoredEndpointRepository.save(endpoint);
         }
     }
 
     private void createMonitoringResult(MonitoredEndpoint endpoint, int statusCode, String payload) {
         MonitoringResult result = MonitoringResult.builder()
-                .monitoredEndpoint(endpoint)
+                .monitoredEndpointId(endpoint.getId())
                 .checkedAt(LocalDateTime.now())
                 .httpCode(statusCode)
                 .payload(payload)

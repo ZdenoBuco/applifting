@@ -27,7 +27,7 @@ public class MonitoredEndpointController {
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppliftingException(e.getMessage(), 500);
+            throw new AppliftingException(e.getMessage(), 400);
         }
     }
 
@@ -72,8 +72,8 @@ public class MonitoredEndpointController {
     public ResponseEntity<MonitoredEndpointOutDTO> deleteMonitoredEndpoint(@PathVariable UUID monitoredEndpointId) {
         try {
             dynamicMonitoringService.removeMonitoringTask(monitoredEndpointId);
-            monitoredEndpointService.deleteEndpoint(monitoredEndpointId);
-            return ResponseEntity.noContent().build();
+            MonitoredEndpointOutDTO deletedEndpoint = monitoredEndpointService.deleteEndpoint(monitoredEndpointId);
+            return ResponseEntity.status(HttpStatus.OK).body(deletedEndpoint);
         } catch (AppliftingException e) {
             throw e;
         } catch (Exception e) {
