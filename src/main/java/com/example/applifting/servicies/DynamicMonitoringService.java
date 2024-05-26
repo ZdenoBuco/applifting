@@ -7,6 +7,8 @@ import com.example.applifting.repositories.MonitoredEndpointRepository;
 import com.example.applifting.repositories.MonitoringResultRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class DynamicMonitoringService {
     private final MonitoringResultRepository monitoringResultRepository;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
     private final Map<UUID, ScheduledFuture<?>> tasks = new ConcurrentHashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(DynamicMonitoringService.class);
 
     @PostConstruct
     public void init() {
@@ -52,6 +55,7 @@ public class DynamicMonitoringService {
             createMonitoringResult(endpoint, response.getStatusCode().value(), response.getBody());
             endpoint.setLastCheck(LocalDateTime.now());
             monitoredEndpointRepository.save(endpoint);
+            logger.info("Successfully monitored endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), response.getStatusCode().value(), response.getBody());
         } catch (Exception e) {
             int statusCode = 500;
             try {
@@ -63,6 +67,7 @@ public class DynamicMonitoringService {
             createMonitoringResult(endpoint, statusCode, e.getMessage());
             endpoint.setLastCheck(LocalDateTime.now());
             monitoredEndpointRepository.save(endpoint);
+            logger.warn("Error monitoring endpoint: {} with status code: {} with payload:\n{}", endpoint.getId(), statusCode, e.getMessage());
         }
     }
 
