@@ -22,4 +22,14 @@ public class MonitoredEndpointInDTOValidator {
             throw new AppliftingException("Endpoint monitoring interval cannot be null and must be between " + MONITORING_INTERVAL_MIN + " and " + MONITORING_INTERVAL_MAX, 400);
         }
     }
+    public static void validateWithoutUrl(MonitoredEndpointInDTO monitoredEndpointInDTO) {
+        if (monitoredEndpointInDTO.getName() == null || monitoredEndpointInDTO.getName().length() > NAME_MAX_LENGTH) {
+            throw new AppliftingException("Endpoint name cannot be null and must be up to " + NAME_MAX_LENGTH + " characters long", 400);
+        }
+        if (monitoredEndpointInDTO.getMonitoringInterval() == null ||
+                monitoredEndpointInDTO.getMonitoringInterval() > MONITORING_INTERVAL_MAX ||
+                monitoredEndpointInDTO.getMonitoringInterval() < MONITORING_INTERVAL_MIN) {
+            throw new AppliftingException("Endpoint monitoring interval cannot be null and must be between " + MONITORING_INTERVAL_MIN + " and " + MONITORING_INTERVAL_MAX, 400);
+        }
+    }
 }

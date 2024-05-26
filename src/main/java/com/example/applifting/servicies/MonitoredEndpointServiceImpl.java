@@ -82,7 +82,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
 
     @Override
     public MonitoredEndpointOutDTO updateEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO, UUID monitoredEndpointId) {
-        MonitoredEndpointInDTOValidator.validate(monitoredEndpointInDTO);
+        MonitoredEndpointInDTOValidator.validateWithoutUrl(monitoredEndpointInDTO);
 
         MonitoredEndpoint endpoint = monitoredEndpointRepository.findById(monitoredEndpointId)
                 .orElseThrow(() -> new AppliftingException("Monitored Endpoint not found", 404));
