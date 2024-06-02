@@ -49,7 +49,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
     @Override
     public List<MonitoredEndpointOutDTO> getEndpoints(Integer resultLimit) {
         authenticatedUserId = getAuthenticatedUserId ();
-        return monitoredEndpointRepository.findMonitoredEndpointByOwnerId(authenticatedUserId).stream().map(endpoint -> MonitoredEndpointOutDTO.builder()
+        return monitoredEndpointRepository.findMonitoredEndpointsByOwnerId(authenticatedUserId).stream().map(endpoint -> MonitoredEndpointOutDTO.builder()
                         .id(endpoint.getId())
                         .name(endpoint.getName())
                         .url(endpoint.getUrl())
@@ -66,7 +66,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
     public MonitoredEndpointOutDTO createEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO) {
         MonitoredEndpointInDTOValidator.validate(monitoredEndpointInDTO);
 
-        authenticatedUserId = getAuthenticatedUserId ();
+        authenticatedUserId = getAuthenticatedUserId();
 
         MonitoredEndpoint endpoint = MonitoredEndpoint.builder()
                 .name(monitoredEndpointInDTO.getName())

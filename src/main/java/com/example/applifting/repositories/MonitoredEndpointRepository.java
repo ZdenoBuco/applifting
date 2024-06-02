@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface MonitoredEndpointRepository extends JpaRepository<MonitoredEndpoint, UUID> {
-    List<MonitoredEndpoint> findMonitoredEndpointByOwnerId(UUID appUserId);
+    List<MonitoredEndpoint> findMonitoredEndpointsByOwnerId(UUID appUserId);
 }
