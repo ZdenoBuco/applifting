@@ -1,11 +1,14 @@
 package com.example.applifting.testData;
 
+import com.example.applifting.models.MonitoredEndpoint;
 import com.example.applifting.models.MonitoringResult;
 import com.example.applifting.models.OutDTOs.MonitoringResultOutDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MonitoredEndpointServiceTD {
     private static final LocalDateTime NOW = LocalDateTime.now();
@@ -83,6 +86,19 @@ public class MonitoredEndpointServiceTD {
                         .build()
         );
     }
-
+    public static List<MonitoredEndpoint> getMonitoredEndpoints(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> MonitoredEndpoint.builder()
+                        .id(UUID.randomUUID())
+                        .name("Endpoint " + i)
+                        .url("http://example.com/endpoint" + i)
+                        .createdAt(LocalDateTime.now())
+                        .lastCheck(LocalDateTime.now())
+                        .monitoringInterval(60)
+                        .monitoringResults(null)
+                        .ownerId(UUID.randomUUID())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
 

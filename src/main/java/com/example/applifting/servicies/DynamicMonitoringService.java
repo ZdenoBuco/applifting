@@ -1,11 +1,13 @@
 package com.example.applifting.servicies;
 
+import com.example.applifting.exceptions.AppliftingException;
 import com.example.applifting.models.MonitoredEndpoint;
 import com.example.applifting.models.MonitoringResult;
 import com.example.applifting.models.OutDTOs.MonitoredEndpointOutDTO;
 import com.example.applifting.repositories.MonitoredEndpointRepository;
 import com.example.applifting.repositories.MonitoringResultRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ public class DynamicMonitoringService {
     private final MonitoredEndpointRepository monitoredEndpointRepository;
     private final MonitoringResultRepository monitoringResultRepository;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+    @Getter
     private final Map<UUID, ScheduledFuture<?>> tasks = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(DynamicMonitoringService.class);
 
@@ -87,7 +90,8 @@ public class DynamicMonitoringService {
         if (future != null) {
             future.cancel(true);
         }
-        scheduleMonitoringTask(monitoredEndpointRepository.findById(updatedEndpoint.getId()).orElseThrow());
+        scheduleMonitoringTask(monitoredEndpointRepository.findById(updatedEndpoint.getId()).orElseThrow(() ->
+                new AppliftingException("Endpoint with ID " + updatedEndpoint.getId() + " does not exist.", 404)));
     }
 
     @Transactional
