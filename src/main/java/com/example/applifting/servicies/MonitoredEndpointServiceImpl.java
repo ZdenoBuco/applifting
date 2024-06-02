@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +48,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
 
     @Override
     public List<MonitoredEndpointOutDTO> getEndpoints(Integer resultLimit) {
-        setAuthenticatedUser();
+        authenticatedUserId = getAuthenticatedUserId ();
         return monitoredEndpointRepository.findMonitoredEndpointByOwnerId(authenticatedUserId).stream().map(endpoint -> MonitoredEndpointOutDTO.builder()
                         .id(endpoint.getId())
                         .name(endpoint.getName())
@@ -67,7 +66,7 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
     public MonitoredEndpointOutDTO createEndpoint(MonitoredEndpointInDTO monitoredEndpointInDTO) {
         MonitoredEndpointInDTOValidator.validate(monitoredEndpointInDTO);
 
-        setAuthenticatedUser();
+        authenticatedUserId = getAuthenticatedUserId ();
 
         MonitoredEndpoint endpoint = MonitoredEndpoint.builder()
                 .name(monitoredEndpointInDTO.getName())
@@ -150,13 +149,12 @@ public class MonitoredEndpointServiceImpl implements MonitoredEndpointService {
         return createdEndpointOutDTO;
     }
 
-    private void setAuthenticatedUser() {
-        Optional<AppUser> user = (Optional<AppUser>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        authenticatedUserId = user.map(AppUser::getId).orElse(null);
+    protected UUID getAuthenticatedUserId() {
+        return (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof AppUser user) ? user.getId() : null;
     }
 
     private void checkIfAuthenticatedUserIsAllowedForEndpoint(MonitoredEndpoint endpoint) {
-        setAuthenticatedUser();
+        authenticatedUserId = getAuthenticatedUserId ();
         if (!authenticatedUserId.equals(endpoint.getOwnerId())) {
             throw new AppliftingException("User is not allowed to access endpoint", 403);
         }
