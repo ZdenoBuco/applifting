@@ -6,9 +6,9 @@ import com.example.applifting.models.InDTOs.AppUserRegistrationInDTO;
 import java.util.regex.Pattern;
 
 public class AppUserRegistrationInDTOValidator {
-    private static final int USERNAME_MAX_LENGTH = 255;
-    private static final int EMAIL_MAX_LENGTH = 255;
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+    public static final int USERNAME_MAX_LENGTH = 255;
+    public static final int EMAIL_MAX_LENGTH = 255;
+    public static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
 
     public static void validate(AppUserRegistrationInDTO userRegistrationInDTO) {
